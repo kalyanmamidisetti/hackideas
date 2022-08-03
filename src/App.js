@@ -1,7 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 //LOCAL IMPORTS
-import "./App.css";
 import MainLayout from "./Layout";
 
 function App() {
