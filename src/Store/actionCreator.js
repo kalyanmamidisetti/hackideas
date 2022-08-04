@@ -5,7 +5,8 @@ export const fetchChallengesList = (
   successCallBack,
   failureCallBack
 ) => {
-  const url = "https://run.mocky.io/v3/8898d851-22f8-4111-af3d-dac46af3c68a";
+  const url =
+    "https://62ebf76555d2bd170e7a42a0.mockapi.io/hackideas/challenges";
   axios
     .get(url, payload)
     .then(function (response) {
