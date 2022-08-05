@@ -44,6 +44,7 @@ const useStyles = makeStyles((theme) => ({
 function LandingPage() {
   const classes = useStyles();
   const navigate = useNavigate();
+  const employeeId = localStorage.getItem("emp_token");
   const [challengesData, setChallengesData] = useState([]);
   const [listingLoader, setListingLoader] = useState(true);
 
@@ -71,8 +72,10 @@ function LandingPage() {
         <i
           className="fa fa-user-circle-o fa-2x"
           aria-hidden="true"
-          style={{ color: "#2e8eec" }}
-        ></i>
+          style={{ color: "#2e8eec", textAlign: "center", marginTop: "8px" }}
+        >
+          <Typography>{employeeId}</Typography>
+        </i>
         <Typography className={classes.headTitleWrap}>
           Hack Challenges
         </Typography>
@@ -93,7 +96,7 @@ function LandingPage() {
       </Toolbar>
       <Button
         variant="contained"
-        startIcon={<i class="fa fa-plus-circle" aria-hidden="true"></i>}
+        startIcon={<i className="fa fa-plus-circle" aria-hidden="true"></i>}
         className={classes.btnWrap}
         disabled={listingLoader}
       >

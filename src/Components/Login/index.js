@@ -73,6 +73,7 @@ function LoginPage() {
             onClick={onHandleSubmit}
             type="submit"
             fullWidth
+            id="login"
             variant="contained"
             className={classes.btnWrap}
           >
