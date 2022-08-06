@@ -1,4 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
+//LOCAL IMPORTS
 import App from "./App";
 
 test("renders welcome page", () => {

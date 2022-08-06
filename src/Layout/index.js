@@ -13,8 +13,9 @@ const cahce = createCache({
   prepend: true,
 });
 
-function Layout(props) {
+function Layout() {
   const navigate = useNavigate();
+
   useEffect(() => {
     const empToken = localStorage.getItem("emp_token");
     if (empToken) {

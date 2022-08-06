@@ -1,13 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import Typography from "@mui/material/Typography";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import { makeStyles } from "@mui/styles";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+//LOCAL IMPORTS
+import { getDateFormat } from "../../Helpers/basic";
 
 const useStyles = makeStyles((theme) => ({
   cardWrap: {
     marginTop: "20px",
+    borderRadius: "10px",
+    boxShadow:
+      "rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset",
   },
   titleWrap: {
     color: "#2e8eec",
@@ -21,24 +28,26 @@ const useStyles = makeStyles((theme) => ({
   descWrap: {
     fontSize: "15px",
     marginTop: "10px",
+    marginBottom: "15px",
     color: "#707070",
+  },
+  upvoteWrap: {
+    fontSize: "18px",
+    float: "right",
+    color: "#2e8eec",
+  },
+  tagWrap: {
+    marginRight: "20px",
   },
 }));
 
 function ChallengeCard(props) {
   const classes = useStyles();
   const { challenge } = props;
+  const [upVotes, setUpVotes] = useState(challenge.upvotes);
 
-  const getDateFormat = (date) => {
-    console.log(date);
-    var options = {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    };
-    const formatedDate = new Date(date).toLocaleDateString("en-US", options);
-    return formatedDate;
+  const onUpvoteClick = () => {
+    setUpVotes(upVotes + 1);
   };
 
   return (
@@ -55,6 +64,31 @@ function ChallengeCard(props) {
         <Typography className={classes.descWrap}>
           {challenge && challenge.description ? challenge.description : "NA"}
         </Typography>
+        {challenge &&
+        challenge.challenge_tags &&
+        challenge.challenge_tags.length ? (
+          <React.Fragment>
+            {challenge.challenge_tags.map((tag, index) => {
+              return (
+                <span key={index} className={classes.tagWrap}>{`#${
+                  tag && tag.title
+                }`}</span>
+              );
+            })}
+          </React.Fragment>
+        ) : null}
+        <Tooltip title="Upvote">
+          <IconButton
+            className={classes.upvoteWrap}
+            onClick={() => {
+              onUpvoteClick();
+            }}
+          >
+            <i className="fa fa-chevron-up fa-1" aria-hidden="true">
+              <div>{upVotes}</div>
+            </i>
+          </IconButton>
+        </Tooltip>
       </CardContent>
     </Card>
   );
