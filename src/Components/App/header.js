@@ -64,7 +64,7 @@ function Header() {
       >
         <MenuItem onClick={handleMenuClose}>{employeeId}</MenuItem>
         <Divider />
-        <MenuItem onClick={onLogoutClick}>Sign Out</MenuItem>
+        <MenuItem onClick={onLogoutClick}>Logout</MenuItem>
       </Menu>
     </Toolbar>
   );
