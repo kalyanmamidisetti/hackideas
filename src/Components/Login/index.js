@@ -120,7 +120,7 @@ function LoginPage() {
       >
         <Paper className={classes.paperWrap}>
           <Typography className={classes.mainTitleWrap}>Hack Ideas</Typography>
-          <Box component="form" onSubmit={onHandleSubmit} noValidate>
+          <Box component="form" onSubmit={onHandleSubmit}>
             <TextField
               margin="normal"
               required

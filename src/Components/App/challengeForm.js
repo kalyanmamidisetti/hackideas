@@ -29,6 +29,7 @@ const useStyles = makeStyles((theme) => ({
   },
   loaderWrap: {
     marginRight: "10px",
+    marginTop: "5px",
   },
   itemWrap: {
     display: "flex",
@@ -199,6 +200,7 @@ function AddChallengeForm(props) {
               onChange={onTitleChange}
               className={classes.textFieldWrap}
               error={formErr.error && formErr.type === "title"}
+              inputProps={{ "data-testid": "challenge-title-input" }}
             />
           </Grid>
           <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
@@ -210,6 +212,7 @@ function AddChallengeForm(props) {
               onChange={onDescChange}
               className={classes.textFieldWrap}
               error={formErr.error && formErr.type === "desc"}
+              inputProps={{ "data-testid": "challenge-desc-input" }}
             />
           </Grid>
           <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>

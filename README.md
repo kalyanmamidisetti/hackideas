@@ -42,6 +42,11 @@ To Visit App:
 
 `localhost:3000`
 
+To Login into App:
+
+`Employee ID: Mandatory field string/number (anything will work)`
+`Employee Password: Non mandatory field`
+
 ## Credits
 
 List of contriubutors:

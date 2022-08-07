@@ -9,7 +9,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Divider from "@mui/material/Divider";
 //LOCAL IMPORTS
-import { CustomHeader } from "./header";
+import Header from "./header";
 import { fetchChallengesList } from "../../Store/actionCreator";
 import ChallengeCard from "./card";
 import AddChallengeForm from "./challengeForm";
@@ -64,17 +64,19 @@ function LandingPage() {
   const [listingLoader, setListingLoader] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
 
-  //FOR VOTES FILTER
+  //FOR SORTING
   const [showSortingOpt, setShowSortingOpt] = useState(false);
-  const opnSortingOpt = Boolean(showSortingOpt);
-  const handleMenuClick = (event) => {
+  const openSortingMenus = Boolean(showSortingOpt);
+  const [selectedSortingType, setSelectedSortingType] = useState("");
+
+  //FOR SORTING MENU OPEN
+  const handleSortingMenuClick = (event) => {
     setShowSortingOpt(event.currentTarget);
   };
-  const handleMenuClose = () => {
+  //FOR SORTING MENU CLOSE
+  const handleSortingMenuClose = () => {
     setShowSortingOpt(null);
   };
-  //FOR SROTING THE SELECTED VOTES FILTER TYPE
-  const [selectedVotesSortType, setSelectedVotesSortType] = useState("");
 
   //LISTING SUCCESSCALLBACK
   const successListData = (res) => {
@@ -105,49 +107,57 @@ function LandingPage() {
   //ON ADD NEW IDEA CLICK
   const addNewChallengeClick = () => {
     setShowAddForm(true);
-    setSelectedVotesSortType("");
+    setSelectedSortingType("");
   };
 
+  //ON CLOSE ADD CHALLENGE FORM
   const closeAddChallengeForm = (data) => {
     if (data && Object.keys(data) && Object.keys(data).length) {
       const challengObj = {
         ...data,
         id: challengesData && challengesData.length + 1,
       };
-      console.log(challengObj);
       let newChallenge = [...challengesData, challengObj];
       setChallengesData(newChallenge);
     }
     setShowAddForm(false);
   };
 
-  //ON UPVOTES SORTING APPLY CLICK
-  const onVoteSortingClick = (type) => {
+  //ON SORTING APPLY CLICK
+  const onSortingClick = (type) => {
     let challenData = [...challengesData];
     let sortedData = [];
-    if (type === "Low-High") {
+    if (type === "Upvotes Low-High") {
       sortedData = challenData.sort(
         (a, b) => parseFloat(a.upvotes) - parseFloat(b.upvotes)
       );
-    } else {
+    } else if (type === "Upvotes High-Low") {
       sortedData = challenData.sort(
         (a, b) => parseFloat(b.upvotes) - parseFloat(a.upvotes)
       );
+    } else if (type === "Date Old-New") {
+      sortedData = challenData.sort(
+        (a, b) => new Date(a.created_date) - new Date(b.created_date)
+      );
+    } else if (type === "Date New-Old") {
+      sortedData = challenData.sort(
+        (a, b) => new Date(b.created_date) - new Date(a.created_date)
+      );
     }
     setChallengesData(sortedData);
-    setSelectedVotesSortType(type);
-    handleMenuClose();
+    setSelectedSortingType(type);
+    handleSortingMenuClose();
   };
 
-  const renderUpvoteSorting = () => {
+  const renderSortingUi = () => {
     return (
       <React.Fragment>
         <Button
-          id="upvotesorting"
+          id="sorting"
           variant="outlined"
-          onClick={handleMenuClick}
+          onClick={handleSortingMenuClick}
           endIcon={
-            selectedVotesSortType === "Low-High" ? (
+            selectedSortingType === "Upvotes Low-High" ? (
               <i
                 className="fa fa-chevron-down fa-1"
                 aria-hidden="true"
@@ -163,26 +173,26 @@ function LandingPage() {
           }
           className={classes.upvotesSortBtn}
         >
-          <span className={classes.sortTitleWrap}>Sort by Upvotes:</span>
+          <span className={classes.sortTitleWrap}>Sort by:</span>
           &nbsp;&nbsp;
-          {selectedVotesSortType}
+          {selectedSortingType}
         </Button>
         <Menu
           id="empProfileMenu"
           anchorEl={showSortingOpt}
-          open={opnSortingOpt}
-          onClose={handleMenuClose}
+          open={openSortingMenus}
+          onClose={handleSortingMenuClose}
           MenuListProps={{
-            "aria-labelledby": "employee profile menus",
+            "aria-labelledby": "Sorting menus",
           }}
           className={classes.menuWrap}
         >
           <MenuItem
             onClick={() => {
-              onVoteSortingClick("High-Low");
+              onSortingClick("Upvotes High-Low");
             }}
             className={
-              selectedVotesSortType === "High-Low"
+              selectedSortingType === "Upvotes High-Low"
                 ? classes.votesFilWrapSelected
                 : classes.votesFilWrap
             }
@@ -192,15 +202,41 @@ function LandingPage() {
           <Divider />
           <MenuItem
             onClick={() => {
-              onVoteSortingClick("Low-High");
+              onSortingClick("Upvotes Low-High");
             }}
             className={
-              selectedVotesSortType === "Low-High"
+              selectedSortingType === "Upvotes Low-High"
                 ? classes.votesFilWrapSelected
                 : classes.votesFilWrap
             }
           >
-            Upvotes: Low-Hight
+            Upvotes: Low-High
+          </MenuItem>
+          <Divider />
+          <MenuItem
+            onClick={() => {
+              onSortingClick("Date New-Old");
+            }}
+            className={
+              selectedSortingType === "Date New-Old"
+                ? classes.votesFilWrapSelected
+                : classes.votesFilWrap
+            }
+          >
+            Date: New-Old
+          </MenuItem>
+          <Divider />
+          <MenuItem
+            onClick={() => {
+              onSortingClick("Date Old-New");
+            }}
+            className={
+              selectedSortingType === "Date Old-New"
+                ? classes.votesFilWrapSelected
+                : classes.votesFilWrap
+            }
+          >
+            Date: Old-New
           </MenuItem>
         </Menu>
       </React.Fragment>
@@ -209,7 +245,7 @@ function LandingPage() {
 
   return (
     <React.Fragment>
-      <CustomHeader />
+      <Header />
       {showAddForm ? (
         <AddChallengeForm closeForm={closeAddChallengeForm} />
       ) : (
@@ -233,7 +269,7 @@ function LandingPage() {
                     >
                       Challenge
                     </Button>
-                    {renderUpvoteSorting()}
+                    {renderSortingUi()}
                     <Grid container spacing={2} className={classes.gridWrap}>
                       {challengesData.map((data, index) => {
                         return (

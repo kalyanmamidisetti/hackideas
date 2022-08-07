@@ -19,7 +19,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Header() {
-  console.log("i am in");
   const classes = useStyles();
   const navigate = useNavigate();
   const employeeId = localStorage.getItem("emp_token");
@@ -70,4 +69,4 @@ function Header() {
   );
 }
 
-export const CustomHeader = React.memo(Header);
+export default React.memo(Header);
