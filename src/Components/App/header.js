@@ -7,7 +7,6 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
-import Button from "@mui/material/Button";
 
 const useStyles = makeStyles((theme) => ({
   headTitleWrap: {
@@ -17,15 +16,10 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "23px",
     textAlign: "center",
   },
-  btnWrap: {
-    float: "right",
-    margin: "15px",
-    borderRadius: "10px",
-    textTransform: "none",
-  },
 }));
 
-function Header(props) {
+function Header() {
+  console.log("i am in");
   const classes = useStyles();
   const navigate = useNavigate();
   const employeeId = localStorage.getItem("emp_token");
@@ -47,16 +41,6 @@ function Header(props) {
   return (
     <Toolbar sx={{ borderBottom: 1, borderColor: "divider" }}>
       <Typography className={classes.headTitleWrap}>Hack Ideas</Typography>
-      {!props.loader ? (
-        <Button
-          variant="outlined"
-          startIcon={<i className="fa fa-plus-circle" aria-hidden="true"></i>}
-          className={classes.btnWrap}
-          onClick={props.onclick}
-        >
-          Challenge
-        </Button>
-      ) : null}
       <IconButton
         onClick={(event) => {
           handleMenuClick(event);

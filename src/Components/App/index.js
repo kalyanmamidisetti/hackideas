@@ -50,6 +50,12 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
     color: "#000000",
   },
+  btnWrap: {
+    float: "left",
+    marginTop: "20px",
+    borderRadius: "13px",
+    textTransform: "none",
+  },
 }));
 
 function LandingPage() {
@@ -203,7 +209,7 @@ function LandingPage() {
 
   return (
     <React.Fragment>
-      <CustomHeader loader={listingLoader} onclick={addNewChallengeClick} />
+      <CustomHeader />
       {showAddForm ? (
         <AddChallengeForm closeForm={closeAddChallengeForm} />
       ) : (
@@ -217,6 +223,16 @@ function LandingPage() {
               <React.Fragment>
                 {challengesData && challengesData.length ? (
                   <React.Fragment>
+                    <Button
+                      variant="outlined"
+                      startIcon={
+                        <i className="fa fa-plus-circle" aria-hidden="true"></i>
+                      }
+                      className={classes.btnWrap}
+                      onClick={addNewChallengeClick}
+                    >
+                      Challenge
+                    </Button>
                     {renderUpvoteSorting()}
                     <Grid container spacing={2} className={classes.gridWrap}>
                       {challengesData.map((data, index) => {
