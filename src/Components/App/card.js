@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import Typography from "@mui/material/Typography";
 import Card from "@mui/material/Card";
@@ -29,7 +29,6 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "15px",
     marginTop: "10px",
     marginBottom: "15px",
-    color: "#707070",
   },
   upvoteWrap: {
     fontSize: "18px",
@@ -44,17 +43,18 @@ const useStyles = makeStyles((theme) => ({
 function ChallengeCard(props) {
   const classes = useStyles();
   const { challenge } = props;
-  const [upVotes, setUpVotes] = useState(challenge.upvotes);
 
-  const onUpvoteClick = () => {
-    setUpVotes(upVotes + 1);
+  const onUpvoteClick = (id) => {
+    props.onUpvoteclick(id);
   };
 
   return (
     <Card className={classes.cardWrap}>
       <CardContent sx={{ flex: 1 }}>
         <Typography className={classes.titleWrap}>
-          {challenge && challenge.title ? challenge.title : "NA"}
+          {`${challenge && challenge.id}. ${
+            challenge && challenge.title ? challenge.title : "NA"
+          }`}
         </Typography>
         <Typography className={classes.dateWrap}>
           {challenge && challenge.created_date
@@ -81,11 +81,11 @@ function ChallengeCard(props) {
           <IconButton
             className={classes.upvoteWrap}
             onClick={() => {
-              onUpvoteClick();
+              onUpvoteClick(challenge.id);
             }}
           >
             <i className="fa fa-chevron-up fa-1" aria-hidden="true">
-              <div>{upVotes}</div>
+              <div>{challenge.upvotes}</div>
             </i>
           </IconButton>
         </Tooltip>
@@ -100,6 +100,7 @@ ChallengeCard.propTypes = {
     description: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     challenge_tags: PropTypes.array.isRequired,
+    id: PropTypes.number.isRequired,
   }).isRequired,
 };
 

@@ -11,6 +11,8 @@ import Autocomplete from "@mui/material/Autocomplete";
 //LOCAL IMPORTS
 import { addNewChallenge } from "../../Store/actionCreator";
 import { useState } from "react";
+import SnackBarAlerts from "../Shared/snackbarAlerts";
+import { getDateFormat } from "../../Helpers/basic";
 
 const useStyles = makeStyles((theme) => ({
   paperWrap: {
@@ -60,17 +62,29 @@ const challengeDefTags = [
 ];
 
 function AddChallengeForm(props) {
-  console.log("imin");
   const classes = useStyles();
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
   const [submitLoader, setSubmitLoader] = useState(false);
-
   const [formErr, setFormErr] = useState({
     type: "",
     error: false,
   });
+  const [opnSnackBar, setOpnSnackBar] = useState({
+    show: false,
+    message: "",
+    type: "",
+  });
+
+  //ON SNACKBAR CLOSE
+  const onSnackClose = () => {
+    setOpnSnackBar({
+      show: false,
+      message: "",
+      type: "",
+    });
+  };
 
   //ON CLOSE FORM CLICK
   const onCloseClick = () => {
@@ -100,13 +114,28 @@ function AddChallengeForm(props) {
     setSelectedTags(values);
   };
 
-  //ADD CHALLENGE CALLBACS
+  //ADD CHALLENGE SUCCESS CALLBAC
   const successAddChallenge = (res) => {
     setSubmitLoader(false);
-    props.closeForm();
+    let challengeObj = {
+      title: title,
+      description: desc,
+      challenge_tags: selectedTags,
+      created_date: getDateFormat(new Date()),
+      id: res && res.id,
+      upvotes: res && res.upvotes,
+    };
+    props.closeForm(challengeObj);
   };
+
+  //ADD CHALLENGE FAILURE CALLBACK
   const failureAddChallenge = (err) => {
     setSubmitLoader(false);
+    setOpnSnackBar({
+      show: true,
+      message: "Something went wrong! Please try again!",
+      type: "error",
+    });
   };
 
   //ON ADD CHALLENGE CLICK
@@ -116,15 +145,30 @@ function AddChallengeForm(props) {
         type: "title",
         error: true,
       });
+      setOpnSnackBar({
+        show: true,
+        message: "Please add challenge title!",
+        type: "warning",
+      });
     } else if (!desc) {
       setFormErr({
         type: "desc",
         error: true,
       });
+      setOpnSnackBar({
+        show: true,
+        message: "Please add challenge description!",
+        type: "warning",
+      });
     } else if (!selectedTags.length) {
       setFormErr({
         type: "tags",
         error: true,
+      });
+      setOpnSnackBar({
+        show: true,
+        message: "Please choose atlease one tag!",
+        type: "warning",
       });
     } else {
       setSubmitLoader(true);
@@ -219,6 +263,9 @@ function AddChallengeForm(props) {
             </Button>
           </Grid>
         </Grid>
+        {opnSnackBar.show ? (
+          <SnackBarAlerts data={opnSnackBar} close={onSnackClose} />
+        ) : null}
       </Paper>
     </Container>
   );

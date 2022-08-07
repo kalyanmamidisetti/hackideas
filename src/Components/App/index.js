@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import { makeStyles } from "@mui/styles";
-import Toolbar from "@mui/material/Toolbar";
 import Grid from "@mui/material/Grid";
 import CircularProgress from "@mui/material/CircularProgress";
 import Button from "@mui/material/Button";
@@ -10,20 +8,13 @@ import Container from "@mui/material/Container";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
 //LOCAL IMPORTS
+import { CustomHeader } from "./header";
 import { fetchChallengesList } from "../../Store/actionCreator";
 import ChallengeCard from "./card";
 import AddChallengeForm from "./challengeForm";
 
 const useStyles = makeStyles((theme) => ({
-  headTitleWrap: {
-    color: "#2e8eec",
-    fontWeight: "bold",
-    flex: 1,
-    fontSize: "23px",
-    textAlign: "center",
-  },
   gridWrap: {
     marginBottom: "20px",
   },
@@ -32,12 +23,6 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "20px",
     marginTop: "20px",
   },
-  btnWrap: {
-    float: "right",
-    margin: "15px",
-    borderRadius: "10px",
-    textTransform: "none",
-  },
   loaderWrap: {
     textAlign: "center",
     marginTop: "20px",
@@ -45,28 +30,45 @@ const useStyles = makeStyles((theme) => ({
   menuWrap: {
     width: "200px",
   },
-  sortBtnWrap: {
+  upvotesSortBtn: {
+    textTransform: "none",
+    marginTop: "20px",
+    borderRadius: "13px",
     float: "right",
+  },
+  votesFilWrap: {
+    borderRadius: "6px",
+    fontWeight: 400,
+    "& hover": {
+      backgroundColor: "#f5f5f5",
+    },
+  },
+  votesFilWrapSelected: {
+    color: "#2e8eec",
+  },
+  sortTitleWrap: {
+    fontWeight: "bold",
+    color: "#000000",
   },
 }));
 
 function LandingPage() {
   const classes = useStyles();
-  const navigate = useNavigate();
-  const employeeId = localStorage.getItem("emp_token");
   const [challengesData, setChallengesData] = useState([]);
   const [listingLoader, setListingLoader] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
 
-  //FOR USER PROFILE MENU
-  const [showEmpMenu, setShowEmpMenu] = useState(false);
-  const openEmpMenu = Boolean(showEmpMenu);
+  //FOR VOTES FILTER
+  const [showSortingOpt, setShowSortingOpt] = useState(false);
+  const opnSortingOpt = Boolean(showSortingOpt);
   const handleMenuClick = (event) => {
-    setShowEmpMenu(event.currentTarget);
+    setShowSortingOpt(event.currentTarget);
   };
   const handleMenuClose = () => {
-    setShowEmpMenu(null);
+    setShowSortingOpt(null);
   };
+  //FOR SROTING THE SELECTED VOTES FILTER TYPE
+  const [selectedVotesSortType, setSelectedVotesSortType] = useState("");
 
   //LISTING SUCCESSCALLBACK
   const successListData = (res) => {
@@ -84,79 +86,128 @@ function LandingPage() {
     fetchChallengesList({}, successListData, failureListData);
   }, []);
 
-  //ON LOGOUT CLICK
-  const onLogoutClick = () => {
-    localStorage.removeItem("emp_token");
-    navigate("/");
+  //ON UPVOTE CLICK
+  const onUpvoteClick = (id) => {
+    const dataIndex = challengesData.findIndex((entry) => entry.id === id);
+    if (dataIndex > -1) {
+      challengesData[dataIndex].upvotes += 1;
+    }
+    let filteredData = [...challengesData];
+    setChallengesData(filteredData);
   };
 
   //ON ADD NEW IDEA CLICK
   const addNewChallengeClick = () => {
     setShowAddForm(true);
+    setSelectedVotesSortType("");
   };
-  const closeAddChallengeForm = () => {
+
+  const closeAddChallengeForm = (data) => {
+    if (data && Object.keys(data) && Object.keys(data).length) {
+      const challengObj = {
+        ...data,
+        id: challengesData && challengesData.length + 1,
+      };
+      console.log(challengObj);
+      let newChallenge = [...challengesData, challengObj];
+      setChallengesData(newChallenge);
+    }
     setShowAddForm(false);
   };
 
-  //ON SORTING APPLY CLICK
-  const onSortingClick = () => {
+  //ON UPVOTES SORTING APPLY CLICK
+  const onVoteSortingClick = (type) => {
     let challenData = [...challengesData];
-    let sortedData = challenData.sort(
-      (a, b) => parseFloat(a.upvotes) - parseFloat(b.upvotes)
-    );
+    let sortedData = [];
+    if (type === "Low-High") {
+      sortedData = challenData.sort(
+        (a, b) => parseFloat(a.upvotes) - parseFloat(b.upvotes)
+      );
+    } else {
+      sortedData = challenData.sort(
+        (a, b) => parseFloat(b.upvotes) - parseFloat(a.upvotes)
+      );
+    }
     setChallengesData(sortedData);
+    setSelectedVotesSortType(type);
+    handleMenuClose();
   };
 
-  return (
-    <React.Fragment>
-      <Toolbar sx={{ borderBottom: 1, borderColor: "divider" }}>
-        <Typography className={classes.headTitleWrap}>
-          Hack Challenges
-        </Typography>
-        <IconButton
-          onClick={(event) => {
-            handleMenuClick(event);
-          }}
+  const renderUpvoteSorting = () => {
+    return (
+      <React.Fragment>
+        <Button
+          id="upvotesorting"
+          variant="outlined"
+          onClick={handleMenuClick}
+          endIcon={
+            selectedVotesSortType === "Low-High" ? (
+              <i
+                className="fa fa-chevron-down fa-1"
+                aria-hidden="true"
+                style={{ fontSize: "18px", marginTop: "-2px" }}
+              ></i>
+            ) : (
+              <i
+                className="fa fa-chevron-up fa-1"
+                aria-hidden="true"
+                style={{ fontSize: "18px", marginTop: "-3px" }}
+              ></i>
+            )
+          }
+          className={classes.upvotesSortBtn}
         >
-          <i
-            className="fa fa-user-circle-o fa-lg"
-            aria-hidden="true"
-            style={{ color: "#2e8eec" }}
-          ></i>
-        </IconButton>
+          <span className={classes.sortTitleWrap}>Sort by Upvotes:</span>
+          &nbsp;&nbsp;
+          {selectedVotesSortType}
+        </Button>
         <Menu
           id="empProfileMenu"
-          anchorEl={showEmpMenu}
-          open={openEmpMenu}
+          anchorEl={showSortingOpt}
+          open={opnSortingOpt}
           onClose={handleMenuClose}
           MenuListProps={{
             "aria-labelledby": "employee profile menus",
           }}
           className={classes.menuWrap}
         >
-          <MenuItem onClick={handleMenuClose}>{employeeId}</MenuItem>
+          <MenuItem
+            onClick={() => {
+              onVoteSortingClick("High-Low");
+            }}
+            className={
+              selectedVotesSortType === "High-Low"
+                ? classes.votesFilWrapSelected
+                : classes.votesFilWrap
+            }
+          >
+            Upvotes: High-Low
+          </MenuItem>
           <Divider />
-          <MenuItem onClick={onLogoutClick}>Sign Out</MenuItem>
+          <MenuItem
+            onClick={() => {
+              onVoteSortingClick("Low-High");
+            }}
+            className={
+              selectedVotesSortType === "Low-High"
+                ? classes.votesFilWrapSelected
+                : classes.votesFilWrap
+            }
+          >
+            Upvotes: Low-Hight
+          </MenuItem>
         </Menu>
-      </Toolbar>
+      </React.Fragment>
+    );
+  };
+
+  return (
+    <React.Fragment>
+      <CustomHeader loader={listingLoader} onclick={addNewChallengeClick} />
       {showAddForm ? (
         <AddChallengeForm closeForm={closeAddChallengeForm} />
       ) : (
         <React.Fragment>
-          {!listingLoader ? (
-            <Button
-              variant="outlined"
-              startIcon={
-                <i className="fa fa-plus-circle" aria-hidden="true"></i>
-              }
-              className={classes.btnWrap}
-              onClick={() => {
-                addNewChallengeClick();
-              }}
-            >
-              New Challenge
-            </Button>
-          ) : null}
           <Container maxWidth="md">
             {listingLoader ? (
               <div className={classes.loaderWrap}>
@@ -166,18 +217,7 @@ function LandingPage() {
               <React.Fragment>
                 {challengesData && challengesData.length ? (
                   <React.Fragment>
-                    <IconButton
-                      className={classes.sortBtnWrap}
-                      onClick={() => {
-                        onSortingClick();
-                      }}
-                    >
-                      <i
-                        className="fa fa-sort-numeric-desc"
-                        aria-hidden="true"
-                        style={{ color: "#2e8eec" }}
-                      ></i>
-                    </IconButton>
+                    {renderUpvoteSorting()}
                     <Grid container spacing={2} className={classes.gridWrap}>
                       {challengesData.map((data, index) => {
                         return (
@@ -190,7 +230,10 @@ function LandingPage() {
                             xl={12}
                             key={index}
                           >
-                            <ChallengeCard challenge={data} />
+                            <ChallengeCard
+                              challenge={data}
+                              onUpvoteclick={onUpvoteClick}
+                            />
                           </Grid>
                         );
                       })}
