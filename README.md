@@ -44,7 +44,7 @@ To Visit App:
 
 To Login into App:
 
-`Employee ID: Mandatory field string/number (anything will work)`
+`Employee ID: Mandatory field string/number (Ex: emp_0014)`
 `Employee Password: Non mandatory field`
 
 ## Credits
