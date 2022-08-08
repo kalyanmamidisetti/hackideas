@@ -7,6 +7,8 @@ Hack Ideas
 - [About The App](#about-the-app)
 - [Technologies](#technologies)
 - [Installation and Setup](#installtaion-and-setup)
+- [Node Version](#Required-node-version)
+- [Deployments](#deployment-info)
 - [Credits](#credits)
 
 ## About The App
@@ -46,6 +48,14 @@ To Login into App:
 
 `Employee ID: Mandatory field string/number (Ex: emp_0014)`
 `Employee Password: Non mandatory field`
+
+## Node Version
+
+Requires Node version of 12.18.0 or above
+
+## Deployments
+
+Website URL (https://hackideasportal.netlify.app/) hosted on netlify
 
 ## Credits
 
