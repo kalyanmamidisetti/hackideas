@@ -48,6 +48,10 @@ function ChallengeCard(props) {
     props.onUpvoteclick(id);
   };
 
+  const onBlogEditClick = () => {
+    props.onEditChallengeClick(challenge);
+  };
+
   return (
     <Card className={classes.cardWrap}>
       <CardContent sx={{ flex: 1 }}>
@@ -77,6 +81,16 @@ function ChallengeCard(props) {
             })}
           </React.Fragment>
         ) : null}
+        <Tooltip title="Edit">
+          <IconButton
+            className={classes.upvoteWrap}
+            onClick={() => {
+              onBlogEditClick();
+            }}
+          >
+            <i className="fa fa-chevron-up fa-1" aria-hidden="true"></i>
+          </IconButton>
+        </Tooltip>
         <Tooltip title="Upvote">
           <IconButton
             className={classes.upvoteWrap}

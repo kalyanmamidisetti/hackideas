@@ -20,6 +20,10 @@
       },
     ],
     upvotes: 0,
+    upvotes_info: [
+      { name: "employeeid", count: 20 },
+      { name: "employeeid", count: 20 },
+    ],
   },
   {
     id: 2,

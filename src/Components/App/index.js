@@ -69,6 +69,11 @@ function LandingPage() {
   const openSortingMenus = Boolean(showSortingOpt);
   const [selectedSortingType, setSelectedSortingType] = useState("");
 
+  const [editChallenge, setEditChallenge] = useState({
+    showEditFrom: false,
+    challengeData: {},
+  });
+
   //FOR SORTING MENU OPEN
   const handleSortingMenuClick = (event) => {
     setShowSortingOpt(event.currentTarget);
@@ -147,6 +152,40 @@ function LandingPage() {
     setChallengesData(sortedData);
     setSelectedSortingType(type);
     handleSortingMenuClose();
+  };
+
+  const onChallengeUpdate = (data) => {
+    console.log(data, "editch data");
+    let oldData = [...challengesData];
+    const removeIndex = data && data.challenge_id;
+    if (removeIndex) {
+      const filtertedData = oldData.filter((data) => data.id !== removeIndex);
+      console.log(filtertedData);
+      let updatedData = {
+        ...data,
+        id: filtertedData && filtertedData.length + 1,
+      };
+      let newData = [...filtertedData, updatedData];
+      console.log(newData);
+      setChallengesData(newData);
+      closeEditChallenge();
+    }
+  };
+
+  //ON EDIT CHALLENGE CLICK
+  const onEditChallengeClick = (data) => {
+    setEditChallenge({
+      showEditFrom: true,
+      challengeData: data,
+    });
+  };
+  //CLOSE EDIT FORM
+  const closeEditChallenge = () => {
+    setEditChallenge({
+      showEditFrom: false,
+      challengeData: {},
+    });
+    setShowAddForm(false);
   };
 
   const renderSortingUi = () => {
@@ -246,59 +285,78 @@ function LandingPage() {
   return (
     <React.Fragment>
       <Header />
-      {showAddForm ? (
-        <AddChallengeForm closeForm={closeAddChallengeForm} />
+      {editChallenge.showEditFrom ? (
+        <AddChallengeForm
+          closeForm={closeEditChallenge}
+          data={editChallenge.challengeData}
+          mode="update"
+          onChallengeUpdate={onChallengeUpdate}
+        />
       ) : (
         <React.Fragment>
-          <Container maxWidth="md">
-            {listingLoader ? (
-              <div className={classes.loaderWrap}>
-                <CircularProgress />
-              </div>
-            ) : (
-              <React.Fragment>
-                {challengesData && challengesData.length ? (
-                  <React.Fragment>
-                    <Button
-                      variant="outlined"
-                      startIcon={
-                        <i className="fa fa-plus-circle" aria-hidden="true"></i>
-                      }
-                      className={classes.btnWrap}
-                      onClick={addNewChallengeClick}
-                    >
-                      Challenge
-                    </Button>
-                    {renderSortingUi()}
-                    <Grid container spacing={2} className={classes.gridWrap}>
-                      {challengesData.map((data, index) => {
-                        return (
-                          <Grid
-                            item
-                            xs={12}
-                            sm={12}
-                            md={12}
-                            lg={12}
-                            xl={12}
-                            key={index}
-                          >
-                            <ChallengeCard
-                              challenge={data}
-                              onUpvoteclick={onUpvoteClick}
-                            />
-                          </Grid>
-                        );
-                      })}
-                    </Grid>
-                  </React.Fragment>
+          {showAddForm ? (
+            <AddChallengeForm closeForm={closeAddChallengeForm} />
+          ) : (
+            <React.Fragment>
+              <Container maxWidth="md">
+                {listingLoader ? (
+                  <div className={classes.loaderWrap}>
+                    <CircularProgress />
+                  </div>
                 ) : (
-                  <Typography className={classes.noDataWrap}>
-                    No new challenges found!
-                  </Typography>
+                  <React.Fragment>
+                    {challengesData && challengesData.length ? (
+                      <React.Fragment>
+                        <Button
+                          variant="outlined"
+                          startIcon={
+                            <i
+                              className="fa fa-plus-circle"
+                              aria-hidden="true"
+                            ></i>
+                          }
+                          className={classes.btnWrap}
+                          onClick={addNewChallengeClick}
+                        >
+                          Challenge
+                        </Button>
+                        {renderSortingUi()}
+                        <Grid
+                          container
+                          spacing={2}
+                          className={classes.gridWrap}
+                        >
+                          {challengesData.map((data, index) => {
+                            return (
+                              <Grid
+                                item
+                                xs={12}
+                                sm={12}
+                                md={12}
+                                lg={12}
+                                xl={12}
+                                key={index}
+                              >
+                                <ChallengeCard
+                                  challenge={data}
+                                  onUpvoteclick={onUpvoteClick}
+                                  onEditChallengeClick={onEditChallengeClick}
+                                />
+                              </Grid>
+                            );
+                          })}
+                        </Grid>
+                      </React.Fragment>
+                    ) : (
+                      <Typography className={classes.noDataWrap}>
+                        No new challenges found!
+                      </Typography>
+                    )}
+                  </React.Fragment>
                 )}
-              </React.Fragment>
-            )}
-          </Container>
+              </Container>
+            </React.Fragment>
+          )}
         </React.Fragment>
       )}
     </React.Fragment>

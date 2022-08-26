@@ -63,10 +63,26 @@ const challengeDefTags = [
 ];
 
 function AddChallengeForm(props) {
+  console.log(props);
+  const openedMode = props && props.mode;
+  const editChallengeData =
+    props &&
+    props.data &&
+    Object.keys(props.data) &&
+    Object.keys(props.data).length
+      ? props.data
+      : {};
   const classes = useStyles();
-  const [title, setTitle] = useState("");
-  const [desc, setDesc] = useState("");
-  const [selectedTags, setSelectedTags] = useState([]);
+  const defTitle = editChallengeData.title ? editChallengeData.title : "";
+  const defDesc = editChallengeData.description
+    ? editChallengeData.description
+    : "";
+  const defTags = editChallengeData.challenge_tags
+    ? editChallengeData.challenge_tags
+    : [];
+  const [title, setTitle] = useState(defTitle);
+  const [desc, setDesc] = useState(defDesc);
+  const [selectedTags, setSelectedTags] = useState(defTags);
   const [submitLoader, setSubmitLoader] = useState(false);
   const [formErr, setFormErr] = useState({
     type: "",
@@ -113,6 +129,10 @@ function AddChallengeForm(props) {
   //ON TAGS CHANGE
   const onTagsChange = (event, values) => {
     setSelectedTags(values);
+    setFormErr({
+      type: "tags",
+      error: false,
+    });
   };
 
   //ADD CHALLENGE SUCCESS CALLBAC
@@ -168,22 +188,30 @@ function AddChallengeForm(props) {
       });
       setOpnSnackBar({
         show: true,
-        message: "Please choose atlease one tag!",
+        message: "Please choose atleast one tag!",
         type: "warning",
       });
     } else {
-      setSubmitLoader(true);
       setFormErr({
-        type: "tags",
-        error: true,
+        type: "",
+        error: false,
       });
       const payload = {
         title: title,
         description: desc,
         created_date: new Date(),
         challenge_tags: selectedTags,
+        challenge_id:
+          editChallengeData && editChallengeData.id
+            ? editChallengeData.id
+            : null,
       };
-      addNewChallenge(payload, successAddChallenge, failureAddChallenge);
+      if (openedMode === "update") {
+        props.onChallengeUpdate(payload);
+      } else {
+        setSubmitLoader(true);
+        addNewChallenge(payload, successAddChallenge, failureAddChallenge);
+      }
     }
   };
 
@@ -201,6 +229,7 @@ function AddChallengeForm(props) {
               className={classes.textFieldWrap}
               error={formErr.error && formErr.type === "title"}
               inputProps={{ "data-testid": "challenge-title-input" }}
+              defaultValue={editChallengeData && editChallengeData.title}
             />
           </Grid>
           <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
@@ -213,6 +242,7 @@ function AddChallengeForm(props) {
               className={classes.textFieldWrap}
               error={formErr.error && formErr.type === "desc"}
               inputProps={{ "data-testid": "challenge-desc-input" }}
+              defaultValue={editChallengeData && editChallengeData.description}
             />
           </Grid>
           <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
@@ -223,10 +253,14 @@ function AddChallengeForm(props) {
               getOptionLabel={(option) => option.title}
               filterSelectedOptions
               onChange={onTagsChange}
+              defaultValue={
+                editChallengeData && editChallengeData.challenge_tags
+              }
               renderInput={(params) => (
                 <TextField
                   {...params}
                   required
+                  error={formErr.error && formErr.type === "tags"}
                   label="Tags"
                   placeholder="please choose tag"
                 />
@@ -253,7 +287,7 @@ function AddChallengeForm(props) {
                 onAddChallenge();
               }}
             >
-              Create
+              {openedMode === "update" ? "Update" : "Create"}
             </Button>
             <Button
               disabled={submitLoader}

@@ -8,7 +8,7 @@ import Login from "../Components/Login";
 import LandingPage from "../Components/App";
 import { PrivateRoute } from "../router";
 
-const cahce = createCache({
+const cache = createCache({
   key: "css",
   prepend: true,
 });
@@ -24,7 +24,7 @@ function Layout() {
   }, [navigate]);
 
   return (
-    <CacheProvider value={cahce}>
+    <CacheProvider value={cache}>
       <StyledEngineProvider injectFirst>
         <Routes>
           <Route path="/" element={<Login />} />
